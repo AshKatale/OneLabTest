@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
 import ReconciliationResults from './components/ReconciliationResults'
 import './App.css'
 
-const API = 'http://localhost:8000'
+const API = 'https://onelabtest-backend.onrender.com'
 
 /* ──────────────────────────────────────────────────────
    Helper: generic data table
@@ -266,6 +266,19 @@ function App() {
   const [settlements, setSettlements]     = useState([])
   const [reconciliationResult, setResult] = useState(null)
   const [activeNav, setActiveNav]         = useState('dashboard')
+
+  /* Wake up backend on app load */
+  useEffect(() => {
+    const wakeUpBackend = async () => {
+      try {
+        await axios.get(`${API}/`, { timeout: 30000 })
+      } catch (e) {
+        // Silently handle wake-up errors - app will still function
+        console.log('Backend wake-up initiated')
+      }
+    }
+    wakeUpBackend()
+  }, [])
 
   /* Generate */
   const handleGenerate = async () => {
